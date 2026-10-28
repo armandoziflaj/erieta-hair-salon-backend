@@ -1,0 +1,73 @@
+================================================================================
+ERIETA HAIR SALON BACKEND - EF CORE MIGRATION CHEAT SHEET
+================================================================================
+
+All commands must be executed from the solution root:
+(e.g., erieta-hair-salon-backend/)
+
+Project Layer Paths:
+  --project:         src/ErietaHairSalon.Infrastructure   (DbContext & Migrations)
+  --startup-project: src/ErietaHairSalon.Api              (App Host & Connection String)
+
+--------------------------------------------------------------------------------
+1. ADD A NEW MIGRATION
+--------------------------------------------------------------------------------
+# Generate a new migration file inside Persistence/Migrations
+dotnet ef migrations add <MigrationName> \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api \
+  --output-dir Persistence/Migrations
+
+# Example (Initial setup):
+dotnet ef migrations add InitialCreate \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api \
+  --output-dir Persistence/Migrations
+
+--------------------------------------------------------------------------------
+2. PREVIEW / INSPECT GENERATED SQL (Dry Run)
+--------------------------------------------------------------------------------
+# Print raw SQL script to terminal to verify types (jsonb, identity keys, etc.)
+dotnet ef migrations script \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
+
+# Save SQL output directly to a file:
+dotnet ef migrations script \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api \
+  --output migrations.sql
+
+--------------------------------------------------------------------------------
+3. APPLY MIGRATIONS TO DATABASE
+--------------------------------------------------------------------------------
+# Apply all pending migrations to the PostgreSQL database
+dotnet ef database update \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
+
+# Rollback / target a specific migration:
+dotnet ef database update <TargetMigrationName> \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
+
+# Rollback all migrations (reset database schema to blank):
+dotnet ef database update 0 \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
+
+--------------------------------------------------------------------------------
+4. REMOVE LAST MIGRATION
+--------------------------------------------------------------------------------
+# Removes the last created migration (Only works if NOT yet applied to the database)
+dotnet ef migrations remove \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
+
+--------------------------------------------------------------------------------
+5. LIST MIGRATIONS
+--------------------------------------------------------------------------------
+# List all migrations and their status (Applied vs Pending)
+dotnet ef migrations list \
+  --project src/ErietaHairSalon.Infrastructure \
+  --startup-project src/ErietaHairSalon.Api
