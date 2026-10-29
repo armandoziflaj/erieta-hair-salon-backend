@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ErietaHairSalon.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,11 +9,18 @@ public class TransformationConfiguration : IEntityTypeConfiguration<Transformati
 {
     public void Configure(EntityTypeBuilder<Transformation> builder)
     {
+        var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         builder.Property(t => t.Title)
-            .HasColumnType("jsonb");
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, jsonOptions) ?? new Dictionary<string, string>());
 
         builder.Property(t => t.Description)
-            .HasColumnType("jsonb");
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, jsonOptions) ?? new Dictionary<string, string>());
 
         builder.Property(t => t.BeforeImageUrl)
             .HasMaxLength(500);

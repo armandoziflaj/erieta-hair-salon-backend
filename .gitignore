@@ -7,3 +7,4 @@ riderModule.iml
 .idea/
 bin/
 obj/
+appsettings.Development.json
